@@ -11,9 +11,30 @@ function findMatches(wordToMatch, cities) {
         return place.city.match(regex) || place.state.match(regex)
     });
 }
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 function displayMatches() {
     const matchArray = findMatches(this.value, cities);
-    console.log(matchArray)
+
+    if (this.value === "") {
+        suggestions.innerHTML = `
+        <li>Filter for a city</li>
+        <li>or a state</li>`;
+    } else {
+        const html = matchArray.map(place => {
+            const regex = new RegExp(this.value, "gi");
+            const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+            const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+            return `
+        <li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(place.population)}</span>
+            </li>
+            `;
+        }).join("");
+        suggestions.innerHTML = html;
+    }
 }
 const searchInput = document.querySelector(".search");
 const suggestions = document.querySelector(".suggestions");
